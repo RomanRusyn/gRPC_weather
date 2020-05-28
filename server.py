@@ -29,7 +29,8 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
         # words = text.split(' ')
         # keywords = self.keywords(words)
 
-        response = CityWeather()
+        
+        response = weather_pb2.CityWeather()
         # response.keywords.extend(keywords)
 
         return response
