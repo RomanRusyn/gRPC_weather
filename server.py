@@ -22,7 +22,7 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
     #     response.value = reqowm.main(request.value)
     #     return response
 
-    def GetWeatherFromConsumer(self, request, context):
+    def GetWeather(self, request, context):
         request_weather = request.name
 
         text = request_weather.replace('\n', '').replace('\r', '')

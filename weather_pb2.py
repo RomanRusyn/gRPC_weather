@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\rweather.proto\"\x14\n\x04\x43ity\x12\x0c\n\x04name\x18\x01 \x01(\t\"O\n\x07Weather\x12\x12\n\nconditions\x18\x01 \x01(\t\x12\x0c\n\x04temp\x18\x02 \x01(\x02\x12\x10\n\x08humidity\x18\x03 \x01(\x02\x12\x10\n\x08pressure\x18\x04 \x01(\x02\"=\n\x0b\x43ityWeather\x12\x13\n\x04\x63ity\x18\x01 \x01(\x0b\x32\x05.City\x12\x19\n\x07weather\x18\x02 \x03(\x0b\x32\x08.Weather21\n\nWeatherApp\x12#\n\nGetWeather\x12\x05.City\x1a\x0c.CityWeather\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rweather.proto\"\x14\n\x04\x43ity\x12\x0c\n\x04name\x18\x01 \x01(\t\"b\n\x07Weather\x12\x12\n\nconditions\x18\x01 \x01(\t\x12\x0c\n\x04temp\x18\x02 \x01(\x02\x12\x10\n\x08humidity\x18\x03 \x01(\x02\x12\x10\n\x08pressure\x18\x04 \x01(\x02\x12\x11\n\ttimestamp\x18\x05 \x01(\x05\"=\n\x0b\x43ityWeather\x12\x13\n\x04\x63ity\x18\x01 \x01(\x0b\x32\x05.City\x12\x19\n\x07weather\x18\x02 \x03(\x0b\x32\x08.Weather21\n\nWeatherApp\x12#\n\nGetWeather\x12\x05.City\x1a\x0c.CityWeather\"\x00\x62\x06proto3'
 )
 
 
@@ -90,6 +90,13 @@ _WEATHER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='Weather.timestamp', index=4,
+      number=5, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -103,7 +110,7 @@ _WEATHER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=39,
-  serialized_end=118,
+  serialized_end=137,
 )
 
 
@@ -140,8 +147,8 @@ _CITYWEATHER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=120,
-  serialized_end=181,
+  serialized_start=139,
+  serialized_end=200,
 )
 
 _CITYWEATHER.fields_by_name['city'].message_type = _CITY
@@ -180,8 +187,8 @@ _WEATHERAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=183,
-  serialized_end=232,
+  serialized_start=202,
+  serialized_end=251,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetWeather',

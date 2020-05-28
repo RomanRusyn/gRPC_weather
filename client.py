@@ -11,7 +11,7 @@ channel = grpc.insecure_channel('localhost:50051')
 stub = weather_pb2_grpc.WeatherAppStub(channel)
 
 # create a valid request message
-city = weather_pb2.City(value="Rivne")
+city = weather_pb2.City(name="Rivne")
 
 # make the call
 response = stub.GetWeather(city)

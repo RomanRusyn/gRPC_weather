@@ -12,6 +12,7 @@ message Weather {
   float temp = 2;
   float humidity = 3;
   float pressure = 4;
+  int32 timestamp = 5;
 }
 
 message CityWeather {
