@@ -25,12 +25,12 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
     def GetWeather(self, request, context):
         request_weather = request.name
 
-        text = request_weather.replace('\n', '').replace('\r', '')
-        words = text.split(' ')
-        keywords = self.keywords(words)
+        # text = request_weather.replace('\n', '').replace('\r', '')
+        # words = text.split(' ')
+        # keywords = self.keywords(words)
 
         response = CityWeather()
-        response.keywords.extend(keywords)
+        # response.keywords.extend(keywords)
 
         return response
 
