@@ -18,4 +18,5 @@ message Weather {
 message CityWeather {
   City city = 1;
   repeated Weather weather = 2;
+//  string weather = 2;
 }
