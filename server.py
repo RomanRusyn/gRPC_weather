@@ -51,7 +51,8 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
 
         city1 = weather_pb2.City(name="Rivne")
         print("--------before response")
-        response = weather_pb2.CityWeather(city=city1, weather=weather1)
+        # response = weather_pb2.CityWeather(city=city1, weather=weather1)
+        response = weather_pb2.CityWeather(city=city1, weather=[weather1])
         # response = request_weather
         print(f"response is: {response}")
         # response.keywords.extend(keywords)
