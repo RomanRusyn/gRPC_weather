@@ -11,10 +11,11 @@ import weather_pb2_grpc
 from threading import Thread
 
 
-
+consumer_weather = consumer.ConsumerClass()
+print(f"consumer weather-> {consumer_weather}")
 # create a class to define the server functions, derived from
 # weather_pb2_grpc.CalculatorServicer
-consumer_weather = consumer.ConsumerClass()
+
 class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
 
     def GetWeather(self, request, context):
@@ -29,7 +30,7 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
         weather.timestamp = 1234456
         city = weather_pb2.City(name="Rivne")
         print(f"from consumer_weather-> "
-              f"{consumer_weather.get_dict('Rivne')}")
+              f"{consumer_weather.get('Rivne')}")
         #     cityweather = weather_pb2.CityWeather()
         #     weather = cityweather.weather.add()
         #     weather.conditions="conditions"
@@ -72,23 +73,6 @@ def serve():
     except KeyboardInterrupt:
         server.stop(0)
 
-def main():
-    thread1 = Thread(target=serve)
-    thread2 = Thread(target=consumer_weather.get_weather)
-    thread2.start()
-    thread1.start()
-    thread1.join()
-    thread2.join()
 if __name__ == "__main__":
-    main()
-    # print(f"res_dict->{res_dict}")
-    # serve()
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    #     consumer_weather = consumer.ConsumerClass()
-    #     serve_finc = executor.submit(serve(), )
-    #     serve_finc.sleep
-    #
-    #     my_f = executor.submit(consumer_weather.get_weather(),)
-    #     res_dict = my_f.result_sictionary
-    #     print(f"res_dict after executor->{res_dict}")
-    #     time.sleep(2)
+    serve()
+    

@@ -103,6 +103,6 @@ Pipfile
 *.lock
 
 #pb2
-.consumer/weather_pb2.py
-.consumer/weather_pb2_grpc.py
+**weather_pb2.py
+**weather_pb2_grpc.py
 

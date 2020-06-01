@@ -19,12 +19,14 @@ class ConsumerClass(object):
         self._city_weather = {}
         self.thread = Thread(target=self.get_weather)
         self.thread.start()
-        
+
 
     def __del__(self):
         print("die ConsumerClass")
 
     def get(self, city):
+        print(f"len of city dict: {len(self._city_weather)}")
+        print(f"city in request : {city}")
         return self._city_weather.get(city, [])
 
     def get_weather(self):
