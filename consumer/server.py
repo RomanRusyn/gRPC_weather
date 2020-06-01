@@ -15,9 +15,6 @@ from threading import Thread
 # create a class to define the server functions, derived from
 # weather_pb2_grpc.CalculatorServicer
 consumer_weather = consumer.ConsumerClass()
-
-thread2 = Thread(target=consumer_weather.get_weather)
-thread2.start()
 class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
 
     def GetWeather(self, request, context):
@@ -75,15 +72,15 @@ def serve():
     except KeyboardInterrupt:
         server.stop(0)
 
-# def main():
-
-thread1 = Thread(target=serve)
-thread1.start()
-
-    # thread1.join()
-    # thread2.join()
-# if __name__ == "__main__":
-#     main()
+def main():
+    thread1 = Thread(target=serve)
+    thread2 = Thread(target=consumer_weather.get_weather)
+    thread2.start()
+    thread1.start()
+    thread1.join()
+    thread2.join()
+if __name__ == "__main__":
+    main()
     # print(f"res_dict->{res_dict}")
     # serve()
     # with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:

@@ -4,31 +4,32 @@ import logging
 
 import pandas as pd
 from confluent_kafka import Consumer
-
+from threading import Thread
 
 
 class ConsumerClass(object):
     def __init__(self):
+        self._should_stop = False
         self.c = Consumer({
             'bootstrap.servers': 'localhost:29092',
             'group.id': 'mygroup',
             'auto.offset.reset': 'earliest'
         })
         self.c.subscribe(['weatherForToday'])
-        self.result_sictionary={}
+        self._city_weather = {}
+        self.thread = Thread(target=self.get_weather)
+        self.thread.start()
+        
 
-    def get_dict(self, city_name):
-        if self.result_sictionary is None:
-            print("empty res")
-            return "its empty"
-        else:
-            print(self.result_sictionary)
-            return (self.result_sictionary, len(self.result_sictionary),
-                    type(self.result_sictionary))
+    def __del__(self):
+        print("die ConsumerClass")
+
+    def get(self, city):
+        return self._city_weather.get(city, [])
 
     def get_weather(self):
-
-        while True:
+        count = 0
+        while not self._should_stop:
             msg = self.c.poll(1.0)
 
             if msg is None:
@@ -46,11 +47,10 @@ class ConsumerClass(object):
 
             city = msg.key().decode('utf-8')
             conditions = json.loads(msg.value().decode('utf-8'))
-            self.result_sictionary = {city: conditions}
-
+            self._city_weather = {city: conditions}
 
             result_list = []
-            result_list.append(self.result_sictionary)
+            result_list.append(self._city_weather)
             data = {'city': [], 'conditions': [], 'temp': [], 'humidity': [],
                     'pressure': []}
             for dict in result_list:
@@ -67,7 +67,9 @@ class ConsumerClass(object):
             logging.info('Town: {}'.format(city))
             logging.info(
                 'Conditions: {}'.format(conditions))
-        c.close()
-
-
-
+            count += 1
+            if count < 100:
+                continue
+            else:
+                self._should_stop = True
+        self.c.close()

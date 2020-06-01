@@ -101,3 +101,8 @@ db.sqlite3
 
 Pipfile
 *.lock
+
+#pb2
+.consumer/weather_pb2.py
+.consumer/weather_pb2_grpc.py
+
