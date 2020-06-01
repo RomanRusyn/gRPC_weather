@@ -1,8 +1,8 @@
 import grpc
 
 # import the generated classes
-import consumer.weather_pb2
-import consumer.weather_pb2_grpc
+import weather_pb2
+import weather_pb2_grpc
 
 # open a gRPC channel
 channel = grpc.insecure_channel('localhost:50051')

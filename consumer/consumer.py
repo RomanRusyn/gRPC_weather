@@ -17,14 +17,22 @@ class ConsumerClass(object):
         self.c.subscribe(['weatherForToday'])
         self.result_sictionary={}
 
-    def get_weather(self):
+    def get_dict(self, city_name):
+        if self.result_sictionary is None:
+            print("empty res")
+            return "its empty"
+        else:
+            print(self.result_sictionary)
+            return (self.result_sictionary, len(self.result_sictionary),
+                    type(self.result_sictionary))
 
+    def get_weather(self):
 
         while True:
             msg = self.c.poll(1.0)
 
             if msg is None:
-                print("message is none")
+                # print("message is none")
                 continue
             if msg.error():
                 print("Consumer error: {}".format(msg.error()))
@@ -38,9 +46,11 @@ class ConsumerClass(object):
 
             city = msg.key().decode('utf-8')
             conditions = json.loads(msg.value().decode('utf-8'))
-            result_sictionary = {city: conditions}
+            self.result_sictionary = {city: conditions}
+
+
             result_list = []
-            result_list.append(result_sictionary)
+            result_list.append(self.result_sictionary)
             data = {'city': [], 'conditions': [], 'temp': [], 'humidity': [],
                     'pressure': []}
             for dict in result_list:
@@ -52,13 +62,12 @@ class ConsumerClass(object):
                         # print(v_key, v_value)
 
             new_data = pd.DataFrame(data=data)
-            print(new_data)
+            # print(new_data)
 
             logging.info('Town: {}'.format(city))
             logging.info(
                 'Conditions: {}'.format(conditions))
         c.close()
 
-if __name__ == '__main__':
-    cons=ConsumerClass()
-    cons.get_weather()
+
+
