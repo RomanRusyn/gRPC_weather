@@ -1,6 +1,17 @@
-ZOOKEEPER_CLIENT_PORT = 32181
+import logging
 
+from confluent_kafka import Consumer
 
-KAFKA_ZOOKEEPER_CONNECT=localhost:32181
-KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092
-KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+log = logging.basicConfig(filename='consumer_results.log', filemode='w',
+                          datefmt='%d-%b-%y %H:%M:%S',
+                          level=logging.INFO,
+                          format='%(asctime)s - %(name)s - %(levelname)s '
+                                 '- %(message)s')
+
+consumer = Consumer({
+    'bootstrap.servers': 'localhost:29092',
+    'group.id': 'mygroup',
+    'auto.offset.reset': 'earliest'
+})
+
+port_grpc = '[::]:50051'

@@ -1,40 +1,65 @@
 """"Script for getting, decoding, logging data from kafka server"""
+# Standard library imports
+import collections
 import json
 import logging
-
-import pandas as pd
-from confluent_kafka import Consumer
 from threading import Thread
+
+# Third party imports
+import pandas as pd
+
+# Local application imports
+from gRPSC_weather.config import consumer, log
 
 
 class ConsumerClass(object):
+    """The ConsumerClass contains
+
+    :_consumer: connection to confluent kafka Consumer with imported
+        configurations
+    :_city_weather: contains dictionary with weather for chosen countries
+
+    In a initialization moment creates a thread for reading weather from kafka
+
+    """
+
     def __init__(self):
         self._should_stop = False
-        self.consumer = Consumer({
-            'bootstrap.servers': 'localhost:29092',
-            'group.id': 'mygroup',
-            'auto.offset.reset': 'earliest'
-        })
-        self.consumer.subscribe(['weatherForToday'])
-        self._city_weather = {}
+        self._consumer = consumer
+        self._consumer.subscribe(['weatherForToday'])
+        self._city_weather = collections.defaultdict(list)
         self.thread = Thread(target=self._retrieve_data)
         self.thread.start()
-        print(f"______________---------from constructor{self._city_weather}")
-
-
 
     def __del__(self):
         print("die ConsumerClass")
 
     def get(self, city):
-        print(f"len of city dict: {len(self._city_weather)}")
-        print(f"city in request : {city}")
+        """Getting and returning weather for current city to server"""
         return self._city_weather.get(city, [])
 
+    def pandas_printing(self, dict_for_pandas):
+        """Prints weather in the cities in good looking format"""
+        result_list = []
+        result_list.append(dict_for_pandas)
+        data = {'city': [], 'conditions': [], 'temp': [], 'humidity': [],
+                'pressure': [], 'timestamp': []}
+        for dict in result_list:
+            for key, value in dict.items():
+                data['city'].append(key)
+                # print(key)
+                for v_key, v_value in value.items():
+                    data[v_key].append(v_value)
+                    # print(v_key, v_value)
+
+        new_data = pd.DataFrame(data=data)
+        print(new_data)
+
     def _retrieve_data(self):
-        count = 0
+        """Queries weather in endless cycle  from kafka"""
+        # count = 0
         while not self._should_stop:
-            msg = self.consumer.poll(1.0)
+            msg = self._consumer.poll(1.0)
 
             if msg is None:
                 # print("message is none")
@@ -43,39 +68,22 @@ class ConsumerClass(object):
                 print("Consumer error: {}".format(msg.error()))
                 continue
 
-            logging.basicConfig(filename='consumer_results.log', filemode='w',
-                                datefmt='%d-%b-%y %H:%M:%S',
-                                level=logging.INFO,
-                                format='%(asctime)s - %(name)s - %(levelname)s '
-                                       '- %(message)s')
+            log
 
             city = msg.key().decode('utf-8')
             conditions = json.loads(msg.value().decode('utf-8'))
-            self._city_weather = {city: conditions}
-            print(f"_city_weather from consumer {self._city_weather}")
+            self._city_weather[city].append(conditions)
 
-            result_list = []
-            result_list.append(self._city_weather)
-            data = {'city': [], 'conditions': [], 'temp': [], 'humidity': [],
-                    'pressure': []}
-            for dict in result_list:
-                for key, value in dict.items():
-                    data['city'].append(key)
-                    # print(key)
-                    for v_key, v_value in value.items():
-                        data[v_key].append(v_value)
-                        # print(v_key, v_value)
-
-            new_data = pd.DataFrame(data=data)
-            # print(new_data)
+            dict_for_pandas = {city: conditions}
+            # pandas_printing(dict_for_pandas)
 
             logging.info('Town: {}'.format(city))
             logging.info(
                 'Conditions: {}'.format(conditions))
             # count += 1
-            # if count < 100:
-            #     continue
-            # else:
-            #     self._should_stop = True
             # print(count)
-        self.consumer.close()
+            # if count > 100:
+            #     self._should_stop = True
+            #     self.thread.join()
+
+        self._consumer.close()

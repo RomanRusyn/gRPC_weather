@@ -1,44 +1,47 @@
+import concurrent.futures
 import time
 from concurrent import futures
-import concurrent.futures
-
-# import the original consumer.py
-import consumer
-import grpc
-# import the generated classes
-import weather_pb2
-import weather_pb2_grpc
 from threading import Thread
 
+import consumer
+import grpc
+import weather_pb2
+import weather_pb2_grpc
+
+from gRPSC_weather.config import port_grpc
 
 consumer_weather = consumer.ConsumerClass()
-print(f"consumer weather-> {consumer_weather}")
-# create a class to define the server functions, derived from
-# weather_pb2_grpc.CalculatorServicer
+
 
 class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
+    """
+    The class is to define the server functions, derived from
+    weather_pb2_grpc.WeatherAppServicer
+
+    """
 
     def GetWeather(self, request, context):
+        """Function to process received data from consumer, client and return
+        response to client
+
+        :request_weather: name of the city where client wants to see the
+            weather
+        :retreived_weather: dictionary with weather received from consumer
+        :city_weather: calling function from .proto file means message weather
+        """
         request_weather = request.name
-        print(f"request_weather from GetWeather = {request_weather}")
-        cityweather = weather_pb2.CityWeather()
-        weather = cityweather.weather.add()
-        weather.conditions="conditions"
-        weather.temp = 12
-        weather.humidity = 123
-        weather.pressure = 1080
-        weather.timestamp = 1234456
-        city = weather_pb2.City(name="Rivne")
-        print(f"from consumer_weather-> "
-              f"{consumer_weather.get('Rivne')}")
-        #     cityweather = weather_pb2.CityWeather()
-        #     weather = cityweather.weather.add()
-        #     weather.conditions="conditions"
-        #     weather.temp = 12
-        #     weather.humidity = 123
-        #     weather.pressure = 1080
-        #     weather.timestamp = 1234456
-        #     city = weather_pb2.City(name=res_dict.key())
+
+        retreived_weather = consumer_weather.get(request_weather)
+        city_weather = weather_pb2.CityWeather()
+        weather = city_weather.weather.add()
+        weather.conditions = retreived_weather[-1]['conditions']
+        weather.temp = retreived_weather[-1]['temp']
+        weather.humidity = retreived_weather[-1]['humidity']
+        weather.pressure = retreived_weather[-1]['pressure']
+        weather.timestamp = retreived_weather[-1]['timestamp']
+
+        city = weather_pb2.City(name=request_weather)
+
         response = weather_pb2.CityWeather(city=city, weather=[weather])
         print(f"response is: {response}")
 
@@ -46,32 +49,29 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
 
 
 def serve():
-    # create a gRPC server
+    """Creates the server
+    :server: creates a gRPC server
+    :weather_pb2_grpc.add_WeatherAppServicer_to_server(
+    WeatherAppServicer(), server): use the generated function
+        `add_WeatherAppServicer_to_server` to add the defined class
+        to the server
+
+    """
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    # use the generated function `add_WeatherAppServicer_to_server`
-    # to add the defined class to the server
     weather_pb2_grpc.add_WeatherAppServicer_to_server(
         WeatherAppServicer(), server)
 
-    # listen on port 50051
-
-    print('Starting server. Listening on port 50051.')
-    server.add_insecure_port('[::]:50051')
+    print(f'Starting server. Listening on port {port_grpc[-5:]}.')
+    server.add_insecure_port(port_grpc)
 
     server.start()
-    # for i in range(100):
-    #     print(i)
-    #     time.sleep(2)
-    #     print(f"i after sleep{i*i}")
-
-    # since server.start() will not block,
-    # a sleep-loop is added to keep alive
     try:
         while True:
             time.sleep(10000)
     except KeyboardInterrupt:
         server.stop(0)
+
 
 if __name__ == "__main__":
     serve()

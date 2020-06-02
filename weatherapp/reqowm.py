@@ -21,6 +21,7 @@ import json
 import logging
 import socket
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from time import sleep
 
 import requests
@@ -61,7 +62,8 @@ def request_current_weather(city_name):
         result_dict = {"conditions": data['weather'][0]['description'],
                        "temp": data['main']['temp'],
                        "humidity": data['main']['humidity'],
-                       "pressure": data['main']['pressure']
+                       "pressure": data['main']['pressure'],
+                       "timestamp": str(datetime.now())
                        }
         return result_dict
     except Exception as e:
@@ -78,6 +80,7 @@ def printing_results(results):
         print(f"temp: {result['temp']}")
         print(f"humidity: {result['humidity']}")
         print(f"pressure: {result['pressure']}")
+        print(f"timestamp: {result['timestamp']}")
 
 
 def kafka_producer(results):
@@ -114,9 +117,9 @@ def main():
 
     Maps weather and towns in 5 threads
     """
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         results = list(executor.map(request_current_weather,
-                                    SAMPLE_OF_CITIES, timeout=12, chunksize=4))
+                                    SAMPLE_OF_CITIES, timeout=20, chunksize=4))
 
     kafka_producer(results)
     # printing_results(results)
