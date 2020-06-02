@@ -10,15 +10,17 @@ from threading import Thread
 class ConsumerClass(object):
     def __init__(self):
         self._should_stop = False
-        self.c = Consumer({
+        self.consumer = Consumer({
             'bootstrap.servers': 'localhost:29092',
             'group.id': 'mygroup',
             'auto.offset.reset': 'earliest'
         })
-        self.c.subscribe(['weatherForToday'])
+        self.consumer.subscribe(['weatherForToday'])
         self._city_weather = {}
-        self.thread = Thread(target=self.get_weather)
+        self.thread = Thread(target=self._retrieve_data)
         self.thread.start()
+        print(f"______________---------from constructor{self._city_weather}")
+
 
 
     def __del__(self):
@@ -29,10 +31,10 @@ class ConsumerClass(object):
         print(f"city in request : {city}")
         return self._city_weather.get(city, [])
 
-    def get_weather(self):
+    def _retrieve_data(self):
         count = 0
         while not self._should_stop:
-            msg = self.c.poll(1.0)
+            msg = self.consumer.poll(1.0)
 
             if msg is None:
                 # print("message is none")
@@ -50,6 +52,7 @@ class ConsumerClass(object):
             city = msg.key().decode('utf-8')
             conditions = json.loads(msg.value().decode('utf-8'))
             self._city_weather = {city: conditions}
+            print(f"_city_weather from consumer {self._city_weather}")
 
             result_list = []
             result_list.append(self._city_weather)
@@ -69,9 +72,10 @@ class ConsumerClass(object):
             logging.info('Town: {}'.format(city))
             logging.info(
                 'Conditions: {}'.format(conditions))
-            count += 1
-            if count < 100:
-                continue
-            else:
-                self._should_stop = True
-        self.c.close()
+            # count += 1
+            # if count < 100:
+            #     continue
+            # else:
+            #     self._should_stop = True
+            # print(count)
+        self.consumer.close()
