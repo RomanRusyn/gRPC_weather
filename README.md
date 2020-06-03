@@ -36,3 +36,4 @@ To run the APP use docker :
         python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. weather.proto
         
         python3 server.py
+
