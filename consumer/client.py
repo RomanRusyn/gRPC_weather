@@ -11,7 +11,8 @@ channel = grpc.insecure_channel('localhost:50051')
 stub = weather_pb2_grpc.WeatherAppStub(channel)
 
 # create a valid request message
-city = weather_pb2.City(name="Miami")
+name = input("Please enter the city: ")
+city = weather_pb2.City(name=name)
 print(f"city = {city}")
 
 response = stub.GetWeather(city)

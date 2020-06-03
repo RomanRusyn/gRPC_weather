@@ -30,6 +30,7 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
         :city_weather: calling function from .proto file means message weather
         """
         request_weather = request.name
+        w_l = []
 
         retreived_weather = consumer_weather.get(request_weather)
         city_weather = weather_pb2.CityWeather()
@@ -40,9 +41,16 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
         weather.pressure = retreived_weather[-1]['pressure']
         weather.timestamp = retreived_weather[-1]['timestamp']
 
+        weather1 = city_weather.weather.add()
+        weather1.conditions = retreived_weather[0]['conditions']
+        weather1.temp = retreived_weather[0]['temp']
+        weather1.humidity = retreived_weather[0]['humidity']
+        weather1.pressure = retreived_weather[0]['pressure']
+        weather1.timestamp = retreived_weather[0]['timestamp']
+
         city = weather_pb2.City(name=request_weather)
 
-        response = weather_pb2.CityWeather(city=city, weather=[weather])
+        response = weather_pb2.CityWeather(city=city, weather=[weather,weather1])
         print(f"response is: {response}")
 
         return response
