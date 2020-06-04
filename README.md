@@ -5,6 +5,7 @@ Weather APP using gRPC
 This APP takes weather for the city
 
 To run the APP use docker :
+
     * run zookeeper:
         docker run -d\
         --net=host\
