@@ -8,7 +8,7 @@ import grpc
 import weather_pb2
 import weather_pb2_grpc
 
-from gRPSC_weather.config import port_grpc
+from gRPC_weather.config import port_grpc
 
 consumer_weather = consumer.ConsumerClass()
 
