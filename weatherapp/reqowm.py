@@ -23,6 +23,8 @@ import socket
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from time import sleep
+import aiohttp
+import asyncio
 
 import requests
 from confluent_kafka import Producer
@@ -50,14 +52,18 @@ def get_city_id(city_name):
     return city_id
 
 
-def request_current_weather(city_name):
+async def request_current_weather(city_name):
     """Function for returning weather data"""
     city_id = get_city_id(city_name)
     try:
-        result = requests.get("http://api.openweathermap.org/data/2.5/weather",
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    "http://api.openweathermap.org/data/2.5/weather",
                               params={'id': city_id, 'units': 'metric',
-                                      'lang': 'en', 'APPID': APPID})
-        data = result.json()
+                                      'lang': 'en', 'APPID': APPID}) as resp:
+                # result = await resp.json()
+
+                data = await resp.json()
 
         result_dict = {"conditions": data['weather'][0]['description'],
                        "temp": data['main']['temp'],
@@ -65,6 +71,7 @@ def request_current_weather(city_name):
                        "pressure": data['main']['pressure'],
                        "timestamp": str(datetime.now())
                        }
+        # print(result_dict)
         return result_dict
     except Exception as e:
         print("Exception (weather):", e)
@@ -111,17 +118,36 @@ def kafka_producer(results):
     # Wait up to 1 second for events.
     producer.poll(1)
 
+async def match():
+    l=[]
+    for index, city in enumerate(SAMPLE_OF_CITIES):
+        l.append(asyncio.create_task(request_current_weather(city)))
+        # task1 = asyncio.create_task(request_current_weather("Rivne"))
+        #
+        # task2 = asyncio.create_task(request_current_weather("Miami"))
+        #
+        # task3 = asyncio.create_task(request_current_weather("New York"))
+        #
+        # task4 = asyncio.create_task(request_current_weather("Kiev"))
+        # await task1
+        # await task2
+        # await task3
+        # await task4
+    for i in l:
+        await i
+    return l
 
 def main():
     """Main function for combining together the functions of the script.
 
     Maps weather and towns in 5 threads
     """
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        results = list(executor.map(request_current_weather,
-                                    SAMPLE_OF_CITIES, timeout=20, chunksize=4))
-
-    kafka_producer(results)
+    print(type(asyncio.run(match())))  #<class 'list'>
+    # with ThreadPoolExecutor(max_workers=10) as executor:
+    #     results = list(executor.map(request_current_weather,
+    #                                 SAMPLE_OF_CITIES, timeout=20, chunksize=4))
+    #
+    # kafka_producer(results)
     # printing_results(results)
 
 
