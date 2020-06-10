@@ -36,14 +36,16 @@ SAMPLE_OF_CITIES = (
 TOPIC = "weatherForToday"
 
 
-def get_city_id(city_name):
+async def get_city_id(city_name):
     """Fucntion for returning id of the city"""
     try:
-        result = requests.get("http://api.openweathermap.org/data/2.5/find",
+        async with aiohttp.ClientSession() as session:
+            async with session.get("http://api.openweathermap.org/data/2.5/find",
                               params={'q': city_name, 'type': 'like',
                                       'units': 'metric', 'lang': 'en',
-                                      'APPID': APPID})
-        data = result.json()
+                                      'APPID': APPID}) as resp:
+                data = await resp.json()
+        # data = result.json()
         city_id = data['list'][0]['id']
     except Exception as e:
         print("Exception (find city):", e, " please write correct city")
@@ -54,7 +56,7 @@ def get_city_id(city_name):
 
 async def request_current_weather(city_name):
     """Function for returning weather data"""
-    city_id = get_city_id(city_name)
+    city_id = await get_city_id(city_name)
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -122,17 +124,6 @@ async def match():
     l=[]
     for index, city in enumerate(SAMPLE_OF_CITIES):
         l.append(asyncio.create_task(request_current_weather(city)))
-        # task1 = asyncio.create_task(request_current_weather("Rivne"))
-        #
-        # task2 = asyncio.create_task(request_current_weather("Miami"))
-        #
-        # task3 = asyncio.create_task(request_current_weather("New York"))
-        #
-        # task4 = asyncio.create_task(request_current_weather("Kiev"))
-        # await task1
-        # await task2
-        # await task3
-        # await task4
     for i in l:
         await i
     return l
@@ -142,13 +133,12 @@ def main():
 
     Maps weather and towns in 5 threads
     """
-    print(type(asyncio.run(match())))  #<class 'list'>
-    # with ThreadPoolExecutor(max_workers=10) as executor:
-    #     results = list(executor.map(request_current_weather,
-    #                                 SAMPLE_OF_CITIES, timeout=20, chunksize=4))
-    #
-    # kafka_producer(results)
-    # printing_results(results)
+    loop = asyncio.get_event_loop()
+    value = loop.run_until_complete(match())
+    list_with_weathers = []
+    for city_weather in value:
+        list_with_weathers.append(city_weather.result())
+    print(f"list1 -> {list_with_weathers}")
 
 
 if __name__ == '__main__':
