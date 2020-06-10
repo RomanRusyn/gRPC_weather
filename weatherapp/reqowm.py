@@ -140,6 +140,8 @@ def main():
         list_with_weathers.append(city_weather.result())
     print(f"list1 -> {list_with_weathers}")
 
+    kafka_producer(list_with_weathers)
+
 
 if __name__ == '__main__':
     while True:

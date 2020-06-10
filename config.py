@@ -8,7 +8,7 @@ log = logging.basicConfig(filename='consumer_results.log', filemode='w',
                           format='%(asctime)s - %(name)s - %(levelname)s '
                                  '- %(message)s')
 
-consumer = Consumer({
+consumer_c = Consumer({
     'bootstrap.servers': 'localhost:29092',
     'group.id': 'mygroup',
     'auto.offset.reset': 'earliest'

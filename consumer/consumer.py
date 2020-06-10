@@ -9,7 +9,7 @@ from threading import Thread
 import pandas as pd
 
 # Local application imports
-from gRPC_weather.config import consumer, log
+from gRPC_weather.config import consumer_c, log
 
 
 class ConsumerClass(object):
@@ -25,7 +25,7 @@ class ConsumerClass(object):
 
     def __init__(self):
         self._should_stop = False
-        self._consumer = consumer
+        self._consumer = consumer_c
         self._consumer.subscribe(['weatherForToday'])
         self._city_weather = collections.defaultdict(list)
         self.thread = Thread(target=self._retrieve_data)
