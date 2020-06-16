@@ -66,21 +66,21 @@ def serve():
 
     """
     port = '1338'
-    with open('/home/roman/server.key', 'rb') as f:  # path to you key location
-        private_key = f.read()
-        with open('/home/roman/server.crt', 'rb') as f:  # path to your cert location
-            certificate_chain = f.read()
-    server_credentials = grpc.ssl_server_credentials(
-        ((private_key, certificate_chain,),))
+    # with open('/home/roman/server.key', 'rb') as f:  # path to you key location
+    #     private_key = f.read()
+    # with open('/home/roman/server.crt', 'rb') as f:  # path to your cert location
+    #     certificate_chain = f.read()
+    # server_credentials = grpc.ssl_server_credentials(
+    #     ((private_key, certificate_chain,),))
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     weather_pb2_grpc.add_WeatherAppServicer_to_server(
         WeatherAppServicer(), server)
 
-    print(f'Starting server. Listening on port {port_grpc[-5:]}.')
-    # server.add_insecure_port(port_grpc)
-    server.add_secure_port('[::]:' + port, server_credentials)
+    print(f'Starting server. Listening on port {port}.')
+    server.add_insecure_port(port)
+    # server.add_secure_port('[::]:' + port, server_credentials)
 
     server.start()
     try:
