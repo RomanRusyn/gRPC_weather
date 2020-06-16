@@ -25,6 +25,7 @@ from datetime import datetime
 from time import sleep
 import aiohttp
 import asyncio
+import timeit
 
 import requests
 from confluent_kafka import Producer
@@ -144,6 +145,9 @@ def main():
 
 
 if __name__ == '__main__':
-    while True:
-        main()
-        sleep(10)
+    print(
+        f'1.AioHTTP time for 100 times :{timeit.timeit(main, number=100)}')
+    # while True:
+    #     # main()
+    #
+    #     sleep(10)

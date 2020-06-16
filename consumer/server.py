@@ -7,7 +7,6 @@ import consumer
 import grpc
 import weather_pb2
 import weather_pb2_grpc
-
 from gRPC_weather.config import port_grpc
 
 consumer_weather = consumer.ConsumerClass()
@@ -50,7 +49,8 @@ class WeatherAppServicer(weather_pb2_grpc.WeatherAppServicer):
 
         city = weather_pb2.City(name=request_weather)
 
-        response = weather_pb2.CityWeather(city=city, weather=[weather,weather1])
+        response = weather_pb2.CityWeather(city=city,
+                                           weather=[weather, weather1])
         print(f"response is: {response}")
 
         return response
@@ -65,13 +65,22 @@ def serve():
         to the server
 
     """
+    port = '1338'
+    with open('/home/roman/server.key', 'rb') as f:  # path to you key location
+        private_key = f.read()
+        with open('/home/roman/server.crt', 'rb') as f:  # path to your cert location
+            certificate_chain = f.read()
+    server_credentials = grpc.ssl_server_credentials(
+        ((private_key, certificate_chain,),))
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     weather_pb2_grpc.add_WeatherAppServicer_to_server(
         WeatherAppServicer(), server)
 
     print(f'Starting server. Listening on port {port_grpc[-5:]}.')
-    server.add_insecure_port(port_grpc)
+    # server.add_insecure_port(port_grpc)
+    server.add_secure_port('[::]:' + port, server_credentials)
 
     server.start()
     try:
