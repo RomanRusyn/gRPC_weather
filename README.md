@@ -35,19 +35,13 @@ To run the APP use docker :
         
     * In consumer folder run:
     
-        pip3 install requests
+        docker build -t consumer_img .
         
-        pip3 install confluent-kafka
-        
-        pip3 install pandas
-        
-        python3 -m pip install grpcio
-        
-        python3 -m pip install grpcio-tools
-        
-        python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. weather.proto
-        
-        python3 server.py
+        docker run \
+        -it --name consumer_cont\
+         --net=host \
+        --rm \
+        consumer_img
         
         python3 client.py
 

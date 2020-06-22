@@ -21,15 +21,15 @@ import weather_pb2_grpc
 
 def run():
     host = 'localhost'
-    port = 1449
+    port = 1338
     # with open('/home/roman/server.crt', 'rb') as f:  # path to my cert location
-    #     trusted_certs = f.read()
-    # credentials = grpc.ssl_channel_credentials(root_certificates=trusted_certs)
+    with open('server.crt', 'rb') as f:  # path to my cert location
+        trusted_certs = f.read()
+    credentials = grpc.ssl_channel_credentials(root_certificates=trusted_certs)
     # channel = grpc.secure_channel('{}:{}'.format(host, port), credentials)
-    # with grpc.secure_channel('{}:{}'.format(host, port),
-    #                          credentials) as channel:
-    # with grpc.insecure_channel('localhost:50051') as channel:
-    with grpc.insecure_channel('{}:{}'.format(host, port)) as channel:
+    with grpc.secure_channel('{}:{}'.format(host, port),
+                             credentials) as channel:
+    # with grpc.secure_channel('{}:{}'.format(host, port)) as channel:
         stub = weather_pb2_grpc.WeatherAppStub(channel)
         name = input("Please enter the city: ")
         city = weather_pb2.City(name=name)

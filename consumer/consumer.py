@@ -9,7 +9,8 @@ from threading import Thread
 import pandas as pd
 
 # Local application imports
-from gRPC_weather.config import consumer_c, log
+# from gRPC_weather.config import consumer_c, log
+from config_2 import consumer_c, log
 
 
 class ConsumerClass(object):

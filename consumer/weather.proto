@@ -22,3 +22,4 @@ message CityWeather {
 }
 
 //python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. weather.proto
+//./grpcurl -plaintext -import-path /home/roman/dockerTest/gRPC_weather/consumer -proto /home/roman/dockerTest/gRPC_weather/consumer/weather.proto -d '{"name":"Rivne"}' localhost:80 hWeatherApp.GetWeather
