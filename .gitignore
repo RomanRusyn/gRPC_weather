@@ -106,3 +106,4 @@ Pipfile
 **weather_pb2.py
 **weather_pb2_grpc.py
 
+/venv/
