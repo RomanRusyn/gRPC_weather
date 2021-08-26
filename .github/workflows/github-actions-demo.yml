@@ -34,13 +34,14 @@ jobs:
           server_address: smtp.gmail.com
           server_port: 465
           # user credentials
-          username: romanrusin06@gmail.com
+          username: testUserName
           password: ${{ secrets.EMAIL_PASSWORD }}
           # email subject
           subject: ${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
           # email body as text
-          body: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+          body: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job
+          .status }}. Hey, Radoslaw! Text me if you received this message
           # comma-separated string, send email to
-          to: romanrusin06@gmail.com,rrusy@softserveinc.com
+          to: romanrusin06@gmail.com,rrusy@softserveinc.com,rkicz@softserveinc.com
           # from email name
-          from: John Doe
+          from: Github Actions
