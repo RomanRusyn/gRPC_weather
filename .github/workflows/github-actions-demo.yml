@@ -1,7 +1,16 @@
-name: GitHub Actions Demo
+name: GitHub Actions Demo own schediled
 on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
   schedule:
-    - cron:  '* * * * *'  # run every minute.
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '50 * * * *'
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -17,3 +26,21 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Send mail
+        if: always()
+        uses: dawidd6/action-send-mail@v2
+        with:
+          # mail server settings
+          server_address: smtp.gmail.com
+          server_port: 465
+          # user credentials
+          username: romanrusin06@gmail.com
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          # email subject
+          subject: ${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
+          # email body as text
+          body: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}. Hey, Radoslaw! Text me if you received this message
+          # comma-separated string, send email to
+          to: romanrusin06@gmail.com,rrusy@softserveinc.com,rkicz@softserveinc.com
+          # from email name
+          from: Github Actions
