@@ -1,7 +1,7 @@
 name: GitHub Actions Demo
 on:
   schedule:
-    - cron:  '* * * * *'  # run every minute.
+    - cron:  '30 * * * *'  # run every 30 minutes.
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
