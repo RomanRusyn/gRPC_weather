@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: GitHub Actions Demo own schediled
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
       - master
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '40 * * * *'
+    - cron:  '50 * * * *'
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
